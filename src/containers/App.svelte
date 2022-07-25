@@ -14,7 +14,7 @@
         datos = datos.split(',').map(Number);
         console.log(datos)
     }
-
+    
     let largo, rango, dato_mayor, dato_menor, datos_ordenados, intervalos, ampltud;
 
 function tabla() {
@@ -99,10 +99,19 @@ function tabla() {
     let promedio;
     let suma_datos = 0;
     let datos_divididos = [];
+    let datos_procentaje = [];
     let datos_multiplicados = [];
+    let suma_datos_multiplicados;
+    const datos_elevados_multiplicados = [];
+
+    let datos_elevados = []; //(x - X̅)^2
+
+    function parse (n) {
+        return parseFloat (n.toFixed(2)); 
+    }
 
     function datos_tabla() {    
-        /* calcula FI y el promedio */ 
+        /* calcula FI */ 
     
         datos_Nr.forEach(function(numero) {
             console.log(numero)
@@ -111,22 +120,49 @@ function tabla() {
             console.log(suma_datos);
         });
     
-    /*         promedio = suma_datos / datos.length; */
-    
+        /* x*f  */
+        datos_Nr.forEach(function(numero) {
+            console.log(numero)
+            datos_multiplicados.push(numero.nombre * numero.repite);
+            console.log(numero.repite * numero.nombre);
+        });
+
+        /* suma de x*f y promedio */
+
+        suma_datos_multiplicados = datos_multiplicados.reduce((sum, date) => sum + date, 0); 
+
+        promedio = suma_datos_multiplicados / suma_datos;
+
+        /* (x - X̅)^2 */
+        datos_Nr.forEach(function(dato) {
+            let number = Math.pow(dato.nombre - promedio, 2);
+            datos_elevados.push(parse(number));
+        });
+
+        /*(x - X̅)^2 * f */
+        let i = 0;
+        while (i <= largo_Nr) {
+            let number = datos_elevados[i] * datos_Nr[i].repite;
+            datos_elevados_multiplicados.push(parse(number));
+            i++;
+        }
+
         /* calcula fr o fi/n */ 
         datos_Nr.forEach(function(numero) {
             let división = numero.repite / suma_datos;
+            división = parse(división);
             datos_divididos.push(división);
         });
     
             /* calcula fi% */ 
         datos_divididos.forEach(function(numero) {
             let multiplicación = numero * 100;
-            datos_multiplicados.push(multiplicación);
+            multiplicación = parse(multiplicación);
+            datos_procentaje.push(multiplicación);
         });
     }
 
-    let suma_datos_fi, suma_datos_Fi, suma_datos_fr, suma_datos_porcentaje;
+    let suma_datos_fi, suma_datos_Fi, suma_datos_fr, suma_datos_porcentaje, suma_datos_elevados, suma_datos_elevados_multiplicados;
     let datos_nombre = [], 
         datos_repetidos = [],
         datos_porcentuales = [];
@@ -134,32 +170,20 @@ function tabla() {
     function suma() {
         suma_datos_fi = suma_datos
     
-        datos_acumulados.forEach(function(numero) {
-            suma_datos_Fi = numero + suma_datos;
-        });
-    
-        datos_divididos.forEach(function(numero) {
-            suma_datos_fr = numero + suma_datos;
-        });
-    
-        datos_multiplicados.forEach(function(numero) {
-            suma_datos_porcentaje = numero + suma_datos;
-        });
-    
-        datos_Nr.forEach(function(dato) {
-            let nombreG = dato.nombre;
-            console.log(nombreG);
-            datos_nombre.push(nombreG);
-            console.log(datos_nombre);
-        });
-        datos_Nr.forEach(function(dato) {
-            let repetidoG = dato.repite;
-            datos_repetidos.push(repetidoG);
-        });
-        datos_multiplicados.forEach(function(dato) {
-            let porcentualesG = dato;
-            datos_porcentuales.push(porcentualesG);
-        });
+        suma_datos_Fi = datos_acumulados.reduce((sum, date) => sum + date, 0);
+
+        suma_datos_fr = datos_divididos.reduce((sum, date) => sum + date, 0);
+        suma_datos_fr = Math.round(suma_datos_fr);
+
+        suma_datos_porcentaje = datos_procentaje.reduce((sum, date) => sum + date, 0);
+        suma_datos_porcentaje = Math.round(suma_datos_fr) * 100;
+
+        alert(datos_procentaje);
+        alert(suma_datos_porcentaje);
+
+
+       suma_datos_elevados = datos_elevados.reduce((sum, date) => sum + date, 0); 
+       suma_datos_elevados_multiplicados = datos_elevados_multiplicados.reduce((sum, date) => sum + date, 0);
     }
 
     function clean() {
@@ -171,12 +195,17 @@ function tabla() {
         datos_Nr = [];
         datos_acumulados = [];
         datos_divididos = [];
-        datos_multiplicados = [];
+        datos_procentaje = [];
         suma_datos = 0;
         suma_datos_fi = 0;
         suma_datos_Fi = 0;
         suma_datos_fr = 0;
         suma_datos_porcentaje = 0;
+
+        suma_datos_multiplicados = 0;
+        promedio = 0;
+        suma_datos_elevados = 0;
+        suma_datos_elevados_multiplicados = 0;
 
     }
 
@@ -194,6 +223,7 @@ function tabla() {
         console.log("antes " + datos);
         clean();
         console.log("despues " + datos);
+
     }
 
     let nombre = "xi";
@@ -204,37 +234,31 @@ function tabla() {
 	function imprimir() {
 
         value = true;
-        console.log(value); 
+        console.log(datos_Nr); 
 
         table.innerHTML = "<p>";
         table.innerHTML = "<thead>";
-        table.innerHTML += "<thead> <th>" + nombre  + "</th> <th>fi</th> <th>Fi</th> <th>fr/n</th> <th>fi%</th> </thead>";
+        table.innerHTML += `<thead> <th> ${nombre} </th> <th>fi</th> <th>Fi</th> <th>x * f</th>  <th>(x - X̅)^2</th> <th>(x - X̅)^2 * f</th>  <th>fr/n</th> <th>fi%</th> </thead>`;
         i = 0;
-        while (i <= intervalos) {
-            table.innerHTML += `<tbody><td>${datos_Nr[i].nombre}</td><td>${datos_Nr[i].repite}</td><td>${datos_acumulados[i]}</td><td>${datos_divididos[i]}</td><td>${datos_multiplicados[i]}</td></tbody>`;
-            i++
+        while (i <= intervalos) { 
+            table.innerHTML += `<tbody> <td>${datos_Nr[i].nombre}</td> <td>${datos_Nr[i].repite}</td> <td>${datos_acumulados[i]}</td> <td>${datos_multiplicados[i]}</td> <td>${datos_elevados[i]}</td> <td>${datos_elevados_multiplicados[i]}</td>  <td>${datos_divididos[i]}</td><td>${datos_procentaje[i]}</td></tbody>`;
+            i++ 
+            console.log("suma_datos_elevados: " +datos_elevados[i]);
         }
-        table.innerHTML += "<tfoot>" + "<td>" + "total" + "</td>" + "<td>" + suma_datos_fi + "</td>" + "<td>" + suma_datos_Fi + "</td>" + "<td>" + suma_datos_fr + "</td>" + "<td>" + suma_datos_porcentaje + "</td>" + "</tfoot>";
+        console.log("suma_datos_elevados: " +datos_elevados);
 
-        tablee.innerHTML = "<thead>";
-            tablee.innerHTML += "<thead> <th>" + nombre  + "</th> <th>fi</th> <th>Fi</th> <th>fr/n</th> <th>fi%</th> </thead>";
-        i = 0;
-        while (i <= intervalos) {
-            tablee.innerHTML += `<tbody><td>${datos_Nr[i].nombre}</td><td>${datos_Nr[i].repite}</td><td>${datos_acumulados[i]}</td><td>${datos_divididos[i]}</td><td>${datos_multiplicados[i]}</td></tbody>`;
-            i++
-        }
-        tablee.innerHTML += "<tfoot>" + "<td>" + "total" + "</td>" + "<td>" + suma_datos_fi + "</td>" + "<td>" + suma_datos_Fi + "</td>" + "<td>" + suma_datos_fr + "</td>" + "<td>" + suma_datos_porcentaje + "</td>" + "</tfoot>";
+        table.innerHTML +=`<tfot> <td> total </td> <td> ${suma_datos_fi} </td> <td> ${suma_datos_Fi} </td> <td> ${suma_datos_multiplicados} </td> <td> ${suma_datos_elevados} </td> <td>  ${suma_datos_elevados_multiplicados} </td> <td>  ${suma_datos_fr} </td> <td> ${suma_datos_porcentaje} </td> </tfot>`;
     }
 
-import { onMount } from "svelte";
-  import Chart from "chart.js";
+import Chart from "chart.js";
   
  let Canvas;
 
  let ctx;
-  onMount(async () => {});
 function graficar() {
-    ctx = Canvas.getContext('2d');
+
+    console.log("graficar");
+    ctx =  Canvas.getContext('2d');
     var chart = new Chart(ctx, {
     type: 'bar',
     data: {
@@ -281,11 +305,17 @@ function graficar() {
         }
     }
 });
-  }
+}
+
+  let fater;
 
   function borrar() {
-    ctx.clearRect(0, 0, Canvas.width, Canvas.height);
-  }
+        Canvas.remove();
+        fater.innerHTML = '<canvas class="canvas" width="50" height="50" bind:this={Canvas} style="background-color: white;"></canvas>';
+    }
+//   const ctxs = [
+//     id = "myChart",
+//   ]
 </script>
 
 
@@ -296,12 +326,13 @@ function graficar() {
         background-color: #676778;
         color: white;
     }
-    .pather {
+    .fater {
     font-size: 62.5%;
 }
     .canvas {
         max-width: 60rem;
         max-width: 50rem;
+        background-color: white;
     }
 </style>
 
@@ -318,6 +349,7 @@ function graficar() {
             <button type="button" on:click={imprimir}>imprimir()</button>
         </label>
     </form>
+    
 
     <div >
         {#if value}
@@ -325,10 +357,10 @@ function graficar() {
         {/if}
     </div>
 
-    <div class="pather">
-        <button on:click={graficar}>Load</button>   
-        <button on:click={borrar}>Clear</button>
-        
-        <canvas class="canvas" width="5" height="5" bind:this={Canvas} style="background-color: white;"></canvas>
+    <button on:click={graficar}>Load</button>   
+    <button on:click={borrar}>Clear</button>
+    
+    <div bind:this={fater} class="fater">
+        <canvas class="canvas" width="5" height="5" bind:this={Canvas} id="Canvas"></canvas>
     </div>
 </div>
