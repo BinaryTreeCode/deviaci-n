@@ -10,9 +10,7 @@
     let datos;
 
     function array() {
-        console.log(datos)
         datos = datos.split(',').map(Number);
-        console.log(datos)
     }
     
     let largo, rango, dato_mayor, dato_menor, datos_ordenados, intervalos, ampltud;
@@ -29,7 +27,6 @@ function tabla() {
     let operación = Math.log10(datos.length) * 3.322 + 1;
     intervalos = Math.round(operación);
     /* ampltud = rango/intervalos; */
-    console.log("datos sin ordenar " + datos + "datos ordenados " + datos_ordenados)
     }
 
     class datoID {
@@ -51,7 +48,6 @@ function tabla() {
             datos_Nr.push(dato);
             i++;
         }
-        console.log("datos ID " + datos_Nr)
     }
     
     function contar() {
@@ -60,19 +56,15 @@ function tabla() {
         while (i <= largo) {
             while (e <= largo) {
                 if (datos_ordenados[0 + i] === datos_ordenados[0 + e]) {
-                    console.log("si " + i + " se repite " + e)
                     datos_Nr[0 + i].repite += 1;
                 }
                 else {
-                    console.log("no")
                 }
-                console.log(datos[0 + i] + " " + datos[0 + e])
                 e++;
             }
             i++;
             e = 0;
         }
-        console.log("datos ordenados " + datos_ordenados + "datos con el valor de repite " + datos_Nr)
     }
     
     var largo_Nr;
@@ -83,7 +75,6 @@ function tabla() {
         while (i <= largo_Nr) {
             while (e <= largo_Nr) {
                 if (datos_Nr[i].nombre === datos_Nr[e].nombre && datos_Nr[i].id !== datos_Nr[e].id) {
-                    console.log("nuevo largo_Nr " + largo_Nr + " el dato eliminado es: " + datos_Nr[i].nombre + " " +datos_Nr[e-1].nombre);
                     datos_Nr.splice(i, 1);
                 } else {
                 }
@@ -96,46 +87,41 @@ function tabla() {
     }
 
     let datos_acumulados =[];
-    let promedio;
     let suma_datos = 0;
     let datos_divididos = [];
     let datos_procentaje = [];
     let datos_multiplicados = [];
-    let suma_datos_multiplicados;
     const datos_elevados_multiplicados = [];
-
     let datos_elevados = []; //(x - X̅)^2
-
+    let media;
     function parse (n) {
         return parseFloat (n.toFixed(2)); 
     }
+
 
     function datos_tabla() {    
         /* calcula FI */ 
     
         datos_Nr.forEach(function(numero) {
-            console.log(numero)
             suma_datos = numero.repite + suma_datos;
             datos_acumulados.push(suma_datos);
-            console.log(suma_datos);
         });
     
         /* x*f  */
         datos_Nr.forEach(function(numero) {
-            console.log(numero)
             datos_multiplicados.push(numero.nombre * numero.repite);
-            console.log(numero.repite * numero.nombre);
         });
 
-        /* suma de x*f y promedio */
+        /* medidas de tendecia central */
 
         suma_datos_multiplicados = datos_multiplicados.reduce((sum, date) => sum + date, 0); 
+        media = suma_datos_multiplicados / suma_datos;
 
-        promedio = suma_datos_multiplicados / suma_datos;
+
 
         /* (x - X̅)^2 */
         datos_Nr.forEach(function(dato) {
-            let number = Math.pow(dato.nombre - promedio, 2);
+            let number = Math.pow(dato.nombre - media, 2);
             datos_elevados.push(parse(number));
         });
 
@@ -162,10 +148,12 @@ function tabla() {
         });
     }
 
-    let suma_datos_fi, suma_datos_Fi, suma_datos_fr, suma_datos_porcentaje, suma_datos_elevados, suma_datos_elevados_multiplicados;
+    let suma_datos_fi, suma_datos_Fi, suma_datos_fr, suma_datos_porcentaje, suma_datos_multiplicados, suma_datos_elevados, suma_datos_elevados_multiplicados;
     let datos_nombre = [], 
         datos_repetidos = [],
         datos_porcentuales = [];
+
+        let varianza, desviación, coeficiente; //coeficiente de variación
 
     function suma() {
         suma_datos_fi = suma_datos
@@ -178,13 +166,51 @@ function tabla() {
         suma_datos_porcentaje = datos_procentaje.reduce((sum, date) => sum + date, 0);
         suma_datos_porcentaje = Math.round(suma_datos_fr) * 100;
 
-        alert(datos_procentaje);
-        alert(suma_datos_porcentaje);
-
-
        suma_datos_elevados = datos_elevados.reduce((sum, date) => sum + date, 0); 
        suma_datos_elevados_multiplicados = datos_elevados_multiplicados.reduce((sum, date) => sum + date, 0);
     }
+
+    let Q1, Q2, Q3;
+    function cuartiles(array) {
+        Q2 = mediana; //mediana de datos_ordenados
+
+        let mitad = Math.floor(array.length / 2);
+        let cuarto = Math.floor(array.length / 4);
+
+        if (array.length % 2 == 1) {
+            Q1 = array[(array.length + 1) / 4];
+
+            Q3 = array[(3*(array.length + 1)) / 4];
+        } else {
+
+            console.log("si cuarto es" + cuarto + "y cuarto - 1 = " + (cuarto - 1) + ", cuya posición es " + array[cuarto - 1] + " y array[cuarto] = " + array[cuarto]);
+            Q1 = (array[cuarto - 1] + array[cuarto]) / 2;
+            Q3 = (array[mitad + cuarto - 1] + array[mitad + cuarto]) / 2;
+        }
+    }
+
+    let moda, mediana;
+    function medidas (){
+
+        //Medidas de tendecia centarl 
+
+        let index = Math.max(...datos_Nr.map(numero => numero.repite));
+        let maxNumber = datos_Nr.map(numero => numero.repite).indexOf(index);
+
+        moda = datos_Nr[maxNumber].nombre;
+
+        let mitad = Math.floor(datos_ordenados.length / 2);
+        mediana = datos_ordenados.length % 2 == 1 ? datos_ordenados[mitad] : (datos_ordenados[mitad - 1] + datos_ordenados[mitad]) / 2;
+        
+        //Medidas de disperción 
+
+        varianza = parse(suma_datos_elevados_multiplicados / suma_datos_fi);
+        desviación = parse(Math.sqrt(varianza)); //desviación estándar
+        coeficiente = parse((desviación / media) * 100);
+
+        cuartiles(datos_ordenados)
+    }
+
 
     function clean() {
         datos = [];
@@ -196,6 +222,11 @@ function tabla() {
         datos_acumulados = [];
         datos_divididos = [];
         datos_procentaje = [];
+        datos_multiplicados = [];
+        datos_elevados = [];
+        datos_elevados_multiplicados = [];
+
+
         suma_datos = 0;
         suma_datos_fi = 0;
         suma_datos_Fi = 0;
@@ -203,10 +234,18 @@ function tabla() {
         suma_datos_porcentaje = 0;
 
         suma_datos_multiplicados = 0;
-        promedio = 0;
         suma_datos_elevados = 0;
         suma_datos_elevados_multiplicados = 0;
 
+        media = 0;
+        moda = 0;
+        mediana = 0;
+        varianza = 0;
+        desviación = 0;
+        coeficiente = 0;
+        Q1 = 0;
+        Q2 = 0;
+        Q3 = 0;
     }
 
     function procesing_dates() {
@@ -218,12 +257,10 @@ function tabla() {
         duplicados();
         datos_tabla ();
         suma();
+        medidas ();
         imprimir();
         datos = [];
-        console.log("antes " + datos);
         clean();
-        console.log("despues " + datos);
-
     }
 
     let nombre = "xi";
@@ -234,7 +271,6 @@ function tabla() {
 	function imprimir() {
 
         value = true;
-        console.log(datos_Nr); 
 
         table.innerHTML = "<p>";
         table.innerHTML = "<thead>";
@@ -243,9 +279,7 @@ function tabla() {
         while (i <= intervalos) { 
             table.innerHTML += `<tbody> <td>${datos_Nr[i].nombre}</td> <td>${datos_Nr[i].repite}</td> <td>${datos_acumulados[i]}</td> <td>${datos_multiplicados[i]}</td> <td>${datos_elevados[i]}</td> <td>${datos_elevados_multiplicados[i]}</td>  <td>${datos_divididos[i]}</td><td>${datos_procentaje[i]}</td></tbody>`;
             i++ 
-            console.log("suma_datos_elevados: " +datos_elevados[i]);
         }
-        console.log("suma_datos_elevados: " +datos_elevados);
 
         table.innerHTML +=`<tfot> <td> total </td> <td> ${suma_datos_fi} </td> <td> ${suma_datos_Fi} </td> <td> ${suma_datos_multiplicados} </td> <td> ${suma_datos_elevados} </td> <td>  ${suma_datos_elevados_multiplicados} </td> <td>  ${suma_datos_fr} </td> <td> ${suma_datos_porcentaje} </td> </tfot>`;
     }
@@ -257,7 +291,6 @@ import Chart from "chart.js";
  let ctx;
 function graficar() {
 
-    console.log("graficar");
     ctx =  Canvas.getContext('2d');
     var chart = new Chart(ctx, {
     type: 'bar',
@@ -354,6 +387,21 @@ function graficar() {
     <div >
         {#if value}
         <table border bind:this={table} transition:fly={{ y: -20 }}>h</table>
+        <h2>Media = {media}</h2>
+        <h2>Moda = {moda}</h2>
+        <h2>Mediana = {mediana}</h2>
+
+        <h2>Varianza = {varianza}^2</h2>
+        <h2>Desviacion Estandar = {desviación}</h2>
+        <h2>Rango = {rango}</h2>
+
+        <h2>Coeficiente de variación = {coeficiente}%</h2>
+
+        <h2  style="font-size: 2rem;">cuartiles:</h2>
+        <h2>Q1 = {Q1}</h2>
+        <h2>Q2 = {Q2}</h2>
+        <h2>Q3 = {Q3}</h2>
+
         {/if}
     </div>
 
