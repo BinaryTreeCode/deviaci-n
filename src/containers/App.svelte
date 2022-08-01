@@ -504,6 +504,7 @@ function borrar() {
 <style>
     :global(body) {
         background-color: #676778;
+        color: #fff;
     }
     .fater {
     font-size: 62.5%;
