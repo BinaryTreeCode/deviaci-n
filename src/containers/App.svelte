@@ -11,7 +11,7 @@
     let datos;
 
     function array() {
-        datos = [datos.split(',').map(Number)];
+        datos = datos.split(',').map(Number);
     }
     
     let largo, rango, dato_mayor, dato_menor, datos_ordenados, intervalos, ampltud;
@@ -294,13 +294,19 @@ function tabla() {
     function procesing_dates() {
         
         array()
+        console.log("datos1 = " + datos)
         tabla();
+        console.log("datos2 = " + datos)
         construir();
+        console.log("datos3 = " + datos)
         contar();
+        console.log("datos4 = " + datos)
         duplicados();
+        console.log("datos5 = " + datos)
         duplicados();
+        console.log("datos6 = " + datos)
         duplicados();
-
+        console.log("datos7 = " + datos)
 
         // datos_Nr =
         // [
@@ -317,11 +323,17 @@ function tabla() {
 
         
         datos_tabla ();
+        console.log("datos8 = " + datos)
         resta_media();
+        console.log("datos9 = " + datos)
         medidas ();
+        console.log("datos10 = " + datos)
         imprimir();
+        console.log("datos11 = " + datos)
         graficar();
+        console.log("datos12 = " + datos)
         clean();
+        console.log("datosFinal = " + datos)
     }
 
     let nombre = "xi";
