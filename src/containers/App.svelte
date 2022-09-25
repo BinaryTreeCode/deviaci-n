@@ -4,13 +4,14 @@
     // import chartjs from 'chart.js';
 
 
+
 	// import { onMount } from 'svelte';
     import { fly } from 'svelte/transition';
 
     let datos;
 
     function array() {
-        datos = datos.split(',').map(Number);
+        datos = [datos.split(',').map(Number)];
     }
     
     let largo, rango, dato_mayor, dato_menor, datos_ordenados, intervalos, ampltud;
@@ -86,7 +87,7 @@ function tabla() {
         }
     }
 
-    let datos_acumulados =[];
+    let datos_acumulados = [];
     let suma_datos = 0;
     let datos_divididos = [];
     let datos_procentaje = [];
@@ -164,7 +165,7 @@ function tabla() {
 
         let varianza, desviación, coeficiente; //coeficiente de variación
 
-    function suma() {
+    function resta_media() {
         suma_datos_fi = suma_datos
     
         suma_datos_Fi = datos_acumulados.reduce((sum, date) => sum + date, 0);
@@ -186,17 +187,23 @@ function tabla() {
         let mitad = Math.floor(array.length / 2);
         let cuarto = Math.floor(array.length / 4);
 
-        if (array.length % 2 == 1) {
-            Q1 = array[(array.length + 1) / 4];
+        console.log(mitad);
+        console.log(cuarto);
 
-            Q3 = array[(3*(array.length + 1)) / 4];
+        if (array.length % 2 == 1) {
+            Q1 = array[(array.length - 1) / 4];
+
+            Q3 = array[(3*(array.length - 1)) / 4];
+
         } else {
 
-            //console.log("si cuarto es" + cuarto + "y cuarto - 1 = " + (cuarto - 1) + ", cuya posición es " + array[cuarto - 1] + " y array[cuarto] = " + array[cuarto]);
+            console.log("si cuarto es" + cuarto + "y cuarto - 1 = " + (cuarto - 1) + ", cuya posición es " + array[cuarto - 1] + " y array[cuarto] = " + array[cuarto]);
             Q1 = (array[cuarto - 1] + array[cuarto]) / 2;
             Q3 = (array[mitad + cuarto - 1] + array[mitad + cuarto]) / 2;
         }
     }
+
+
 
     let moda, mediana;
     function medidas (){
@@ -310,7 +317,7 @@ function tabla() {
 
         
         datos_tabla ();
-        suma();
+        resta_media();
         medidas ();
         imprimir();
         graficar();
@@ -335,7 +342,7 @@ function tabla() {
         etiquetas ();
         value = true;
 
-        table.innerHTML = "<p>";
+        //table.innerHTML = "<p>";
         table.innerHTML = "<thead>";
         table.innerHTML += `<thead> <th> ${nombre} </th> <th>fi</th> <th>Fi</th> <th>x * f</th>  <th>(x - X̅)^2</th> <th>(x - X̅)^2 * f</th>  <th>fr/n</th> <th>fi%</th> </thead>`;
         i = 0;
@@ -489,12 +496,14 @@ var array = [];
 
 }
 
+function count () {
+    array.map(number => number*8)
+}
 
 function borrar() {
     new_chart.destroy();
     new_chart2.destroy();
     }
-
 
 </script>
 
@@ -506,14 +515,14 @@ function borrar() {
         background-color: #676778;
         color: #fff;
     }
-    .fater {
+    /* .fater {
     font-size: 62.5%;
 }
     .fater canvas {
         max-width: 60rem;
         max-width: 50rem;
         background-color: white;
-    }
+    } */
 </style>
 
 
@@ -527,7 +536,7 @@ function borrar() {
 
             <p>{datos}</p>
             <button type="button" on:click={imprimir}>imprimir()</button>
-        </label>
+        </label> 
     </form>
     
 
@@ -554,9 +563,6 @@ function borrar() {
 
     <button on:click={graficar}>Load</button>   
     <button on:click={borrar}>Clear</button>
-    
-    <div class="fater">
         <canvas class="canvas" width="5" height="5" bind:this={Canvas} id="Canvas"></canvas>
         <canvas class="canvas" width="5" height="5" bind:this={Canvas2} id="Canvas"></canvas>
     </div>
-</div>

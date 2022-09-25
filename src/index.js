@@ -11,7 +11,10 @@ var x = 0;
 var b = 1;
 while (x < 128) {
     x = i ** 2;
-    console.log(`${i} * 2 = ${x} (2^${i})  ${b}`)
+    //console.log(`${i} * 2 = ${x} (2^${i})  ${b}`)
     i++;   
     b++;
 }
+
+
+
