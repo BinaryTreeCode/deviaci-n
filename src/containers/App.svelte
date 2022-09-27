@@ -19,7 +19,8 @@
 function tabla() {
     largo = datos.length - 1;
     
-    datos_ordenados = datos.sort((a, b) => a - b);
+    datos_ordenados = datos.slice();
+    datos_ordenados = datos_ordenados.sort((a, b) => a - b);
     dato_menor = datos_ordenados[0];
     dato_mayor = datos_ordenados[largo];
     
